@@ -1,8 +1,6 @@
 # %%
-from PIL import Image
 import os
-
-# %%
+from PIL import Image
 pixW = 48  # height of each sprite
 pixH = 48  # width of each sprite
 modW = 0   # if the height and width are not the same, use this to adding padding to both side
@@ -12,17 +10,21 @@ imgType = ".png"
 inputDir = "./input/"
 outputDir = "./output/"
 mergedDir = "./merged/"
-# For standard RPG Maker sprites use line 16 and 86, if not standard RPG Maker spirit use line 17 and 87
+separatedDir = "./seperated/"
+# For standard RPG Maker sprites use line 12 and 91, if not standard RPG Maker spirit use line 13 and 92
 stateName = ["front", "left", "right", "back", "death"]
 # spriteRowCount = 0
 
+# %%
 # Create folders to hold output and merged images
-if not os.path.exists("./merged"):
-    os.mkdir("./merged")
+if not os.path.exists(mergedDir):
+    os.mkdir(mergedDir)
 
-if not os.path.exists("./output"):
-    os.mkdir("./output")
+if not os.path.exists(outputDir):
+    os.mkdir(outputDir)
 
+if not os.path.exists(separatedDir):
+    os.mkdir(separatedDir)
 
 # Open the image
 imgFiles = [f for f in os.listdir(inputDir) if f.endswith(imgType)]
@@ -34,7 +36,7 @@ for image in imgFiles:
     img = Image.open(inputDir + image)
 
     # get image Name
-    imageName = image[:-4]
+    imgName = image[:-4]
 
     # Get the width and height of the image
     width, height = img.size
@@ -51,9 +53,12 @@ for image in imgFiles:
             right = left + pixW
             bottom = top + pixH
             crop = img.crop((left, top, right, bottom))
-            filename = outputDir + \
-                f"{str(row).zfill(3)}_{str(col).zfill(3)}{imgType}"
-            crop.save(filename)
+            outputFilename = outputDir + \
+                f"{imgName}_{str(row).zfill(3)}_{str(col).zfill(3)}{imgType}"
+            crop.save(outputFilename)
+            separatedFilename = separatedDir + \
+                f"{imgName}_{str(row).zfill(3)}_{str(col).zfill(3)}{imgType}"
+            crop.save(separatedFilename)
 
     # Get a list of all the image files in the outputDir
     imgFiles = [f for f in os.listdir(outputDir) if f.endswith(imgType)]
@@ -83,8 +88,8 @@ for image in imgFiles:
             merged.paste(imgNew, (modImgW*x, 0))
 
         # Save the merged image with the next output filename
-        mergedFilename = mergedDir + f"{imageName}_{stateName[count]}{imgType}"
-        # mergedFilename = mergedDir + f"{imageName}_{str(count).zfill(3)}_merged{imgType}"
+        mergedFilename = mergedDir + f"{imgName}_{stateName[count]}{imgType}"
+        # mergedFilename = mergedDir + f"{imgName}_{str(count).zfill(3)}_merged{imgType}"
         merged.save(mergedFilename)
         count += 1
 
